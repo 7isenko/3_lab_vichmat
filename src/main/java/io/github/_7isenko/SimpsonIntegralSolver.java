@@ -9,12 +9,13 @@ public class SimpsonIntegralSolver {
     private final Function function;
     private final double accuracy;
     private double lastInaccuracy;
-    private int splits = 1;
+    private int splits;
+
 
     public SimpsonIntegralSolver(Function function, double accuracy) {
         this.function = function;
         this.accuracy = accuracy;
-        this.splits = 0;
+        this.splits = 1;
         this.lastInaccuracy = 0;
     }
 
@@ -53,7 +54,7 @@ public class SimpsonIntegralSolver {
             newResult *= step / 3;
             lastInaccuracy = getRunge(newResult, result);
             result = newResult;
-        } while (lastInaccuracy >= accuracy);
+        } while (Math.abs(lastInaccuracy) >= accuracy);
 
 
         return swap ? -result : result;
@@ -61,7 +62,12 @@ public class SimpsonIntegralSolver {
 
     private double calcFunc(double x) {
         double result = function.solve(x);
-        return Double.isFinite(result) ? result : calcFunc(x + accuracy / 2);
+        return Double.isFinite(result) ? result : calcFuncOrZero(x + accuracy / 2);
+    }
+
+    private double calcFuncOrZero(double x) {
+        double result = function.solve(x);
+        return Double.isFinite(result) ? result : 0;
     }
 
     private double getRunge(double result, double prevResult) {

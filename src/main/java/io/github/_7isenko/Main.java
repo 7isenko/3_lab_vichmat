@@ -13,8 +13,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-
-        System.out.println("Выберите уравнение, корни которого хотите найти");
+        System.out.println("Выберите уравнение, интеграл от которого хотите найти");
         System.out.println("1 - y = -x^2 + 8x - 12");
         System.out.println("2 - y = 1/x");
         System.out.println("3 - y = sin(x) / x");
@@ -77,11 +76,9 @@ public class Main {
 
         SimpsonIntegralSolver integralSolver = new SimpsonIntegralSolver(chosenFunction, accuracy);
         double answer = integralSolver.solve(xLeft, xRight);
-        double inaccuracy = integralSolver.getLastInaccuracy();
-        int splits = integralSolver.getSplits();
 
-        System.out.printf("Ваш ответ: S = %.4f; количество разбиений: %d", answer, splits);
-        System.out.printf("Полученная погрешность: %.4f", inaccuracy);
+        System.out.printf("Ваш ответ: S = %.4f; количество разбиений: %d\n", answer, integralSolver.getSplits());
+        System.out.printf("Полученная погрешность: %.6f", integralSolver.getLastInaccuracy());
 
     }
 
