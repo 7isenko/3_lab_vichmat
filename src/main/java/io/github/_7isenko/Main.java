@@ -76,9 +76,12 @@ public class Main {
 
         SimpsonIntegralSolver integralSolver = new SimpsonIntegralSolver(chosenFunction, accuracy);
         double answer = integralSolver.solve(xLeft, xRight);
+        int splits = integralSolver.getSplits();
 
-        System.out.printf("Ваш ответ: S = %.4f; количество разбиений: %d\n", answer, integralSolver.getSplits());
-        System.out.printf("Полученная погрешность: %.6f", integralSolver.getLastInaccuracy());
+        if (splits == 1024)
+            System.out.println("Было проведено слишком много итераций. Попробуйте задать равные по модулю границы.");
+        System.out.printf("Ваш ответ: S = %.4f; количество разбиений: %d\n", answer, splits);
+        System.out.printf("Полученная погрешность: %.8f", integralSolver.getLastInaccuracy());
 
     }
 

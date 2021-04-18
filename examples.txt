@@ -1,0 +1,5 @@
+1. от -3 до 5 ответ -82.666(6), https://www.wolframalpha.com/input/?i=integrate+-x%5E2+%2B8x-12+from+-3+to+5
+2.
+3.
+4.
+5. от 1.2 до 2, с точностью 0.001 ответ 1,09; пример 4: http://mathprofi.ru/formula_simpsona_metod_trapecij.html
