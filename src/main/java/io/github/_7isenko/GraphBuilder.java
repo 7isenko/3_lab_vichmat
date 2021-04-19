@@ -1,16 +1,16 @@
 package io.github._7isenko;
 
-import org.knowm.xchart.SwingWrapper;
-import org.knowm.xchart.XYChart;
-import org.knowm.xchart.XYChartBuilder;
-import org.knowm.xchart.XYSeries;
+import org.knowm.xchart.*;
+import org.knowm.xchart.internal.chartpart.Chart;
 import org.knowm.xchart.style.Styler;
 import org.knowm.xchart.style.markers.SeriesMarkers;
 
 import javax.swing.*;
 import java.awt.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.NoSuchElementException;
 
 /**
  * @author 7isenko
@@ -18,6 +18,11 @@ import java.util.Collections;
 public class GraphBuilder {
 
     public static void createIntegralExampleGraph(Function chosenFunction, String strFunc, double xLeft, double xRight) {
+        if (xLeft > xRight) {
+            double tmp = xLeft;
+            xLeft = xRight;
+            xRight = tmp;
+        }
         XYChart chart = createExampleGraph(chosenFunction, strFunc, xLeft - 1, xRight + 1);
         createGraph(chart, "integral", chosenFunction, xLeft, xRight, XYSeries.XYSeriesRenderStyle.Area, Color.BLUE);
     }
@@ -27,15 +32,20 @@ public class GraphBuilder {
         chart.getStyler().setLegendVisible(false);
         chart.getStyler().setZoomEnabled(true);
         createGraph(chart, "y(x)", function, leftBorder, rightBorder, XYSeries.XYSeriesRenderStyle.Line, Color.GREEN);
-        SwingWrapper swingWrapper = new SwingWrapper<>(chart);
-        JFrame frame = swingWrapper.displayChart();
+        // SwingWrapper swingWrapper = new SwingWrapper<>(chart);
+        //  JFrame frame = swingWrapper.displayChart(); // FIXME: моя либа для графиков обожает бросать здесь исключение, причем из другого потока
+        JFrame frame = displayChart(chart);
         frame.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         frame.setAlwaysOnTop(true);
         return chart;
     }
 
-    // TODO: красиво рисовать гиперболу
     private static void createGraph(XYChart chart, String name, Function function, double leftBorder, double rightBorder, XYSeries.XYSeriesRenderStyle renderStyle, Color lineColor) {
+        if (leftBorder > rightBorder) {
+            double tmp = leftBorder;
+            leftBorder = rightBorder;
+            rightBorder = tmp;
+        }
         ArrayList<Double> xGraph = new ArrayList<>();
         ArrayList<Double> yGraph = new ArrayList<>();
         double xVal = leftBorder;
@@ -56,22 +66,50 @@ public class GraphBuilder {
                     yGraph.add(function.solve(xVal + 0.0001));
                 } else {
                     if (Double.isInfinite(yVal)) {
-                        createGraph(chart, name + "2", function, xVal, rightBorder, renderStyle, lineColor);
+                        createGraph(chart, name + "2", function, xVal + 0.0001, rightBorder, renderStyle, lineColor);
                         break;
                     }
                 }
             }
             xVal += 0.005;
         }
-        if (Collections.max(yGraph) > 200D) {
-            chart.getStyler().setYAxisMax(8D);
+        try {
+            if (Collections.max(yGraph) > 200D) {
+                chart.getStyler().setYAxisMax(8D);
+            }
+        } catch (NoSuchElementException e) {
+            // ignore, it is ok
         }
-        if (Collections.min(yGraph) < -200D) {
-            chart.getStyler().setYAxisMin(-8D);
+        try {
+            if (Collections.min(yGraph) < -200D) {
+                chart.getStyler().setYAxisMin(-8D);
+            }
+        } catch (NoSuchElementException e) {
+            // ignore
         }
-        chart.addSeries(name, xGraph, yGraph).setXYSeriesRenderStyle(renderStyle).setMarker(SeriesMarkers.NONE).setLineColor(lineColor);
 
+        if (!xGraph.isEmpty()) {
+            chart.addSeries(name, xGraph, yGraph).setXYSeriesRenderStyle(renderStyle).setMarker(SeriesMarkers.NONE).setLineColor(lineColor);
+        }
     }
 
+    private static JFrame displayChart(XYChart chart) {
+        final JFrame frame = new JFrame("Semisenko Max P3232");
+        try {
+            SwingUtilities.invokeLater(() -> {
+                Thread.setDefaultUncaughtExceptionHandler(null);
+
+                JPanel chartPanel = new XChartPanel<>(chart);
+
+                frame.add(chartPanel);
+                frame.pack();
+                frame.setVisible(true);
+            });
+        } catch (Exception e) {
+            // ignore
+        }
+
+        return frame;
+    }
 
 }
