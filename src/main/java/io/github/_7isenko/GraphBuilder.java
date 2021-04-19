@@ -10,7 +10,6 @@ import org.knowm.xchart.style.markers.SeriesMarkers;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 /**
@@ -25,10 +24,13 @@ public class GraphBuilder {
 
     public static XYChart createExampleGraph(Function function, String formula, double leftBorder, double rightBorder) {
         XYChart chart = new XYChartBuilder().width(600).height(400).title(formula).xAxisTitle("x").yAxisTitle("y").build();
-        chart.getStyler().setLegendPosition(Styler.LegendPosition.InsideNE);
+        chart.getStyler().setLegendVisible(false);
         chart.getStyler().setZoomEnabled(true);
         createGraph(chart, "y(x)", function, leftBorder, rightBorder, XYSeries.XYSeriesRenderStyle.Line, Color.GREEN);
-        new SwingWrapper<>(chart).displayChart().setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+        SwingWrapper swingWrapper = new SwingWrapper<>(chart);
+        JFrame frame = swingWrapper.displayChart();
+        frame.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+        frame.setAlwaysOnTop(true);
         return chart;
     }
 
@@ -40,25 +42,31 @@ public class GraphBuilder {
         while (xVal <= rightBorder) {
             double yVal = function.solve(xVal);
             if (Double.isFinite(yVal) && yVal < 100000D) {
-                xGraph.add(xVal);
-                yGraph.add(yVal);
+                double last = yGraph.size() > 0 ? yGraph.get(yGraph.size() - 1) : yVal;
+                if (Math.min(last, yVal) - Math.max(yVal, last) >= -195) {
+                    xGraph.add(xVal);
+                    yGraph.add(yVal);
+                } else {
+                    createGraph(chart, name + "2", function, xVal, rightBorder, renderStyle, lineColor);
+                    break;
+                }
             } else {
                 if (Double.isNaN(yVal)) {
                     xGraph.add(xVal);
                     yGraph.add(function.solve(xVal + 0.0001));
                 } else {
                     if (Double.isInfinite(yVal)) {
-                        createGraph(chart, name + "2", function, xVal + 0.01, rightBorder, renderStyle, lineColor);
+                        createGraph(chart, name + "2", function, xVal, rightBorder, renderStyle, lineColor);
                         break;
                     }
                 }
             }
-            xVal += 0.01;
+            xVal += 0.005;
         }
-        if (Collections.max(yGraph) > 100000D) {
+        if (Collections.max(yGraph) > 200D) {
             chart.getStyler().setYAxisMax(8D);
         }
-        if (Collections.min(yGraph) < -100000D) {
+        if (Collections.min(yGraph) < -200D) {
             chart.getStyler().setYAxisMin(-8D);
         }
         chart.addSeries(name, xGraph, yGraph).setXYSeriesRenderStyle(renderStyle).setMarker(SeriesMarkers.NONE).setLineColor(lineColor);

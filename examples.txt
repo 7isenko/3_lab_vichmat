@@ -1,5 +1,4 @@
-1. от -3 до 5 ответ -82.666(6), https://www.wolframalpha.com/input/?i=integrate+-x%5E2+%2B8x-12+from+-3+to+5
-2.
-3.
-4.
-5. от 1.2 до 2, с точностью 0.001 ответ 1,09; пример 4: http://mathprofi.ru/formula_simpsona_metod_trapecij.html
+1. от -3 до 5 ответ -82.666(6); https://www.wolframalpha.com/input/?i=integrate+-x%5E2+%2B8x-12+from+-3+to+5
+2. от -1 до 1 ответ 0; https://www.wolframalpha.com/input/?i=integrate+1%2Fx+from+-1+to+1
+3. от -2 до 1 ответ 2.5515; https://www.wolframalpha.com/input/?i=integrate+sin%28x%29%2Fx+from+-2+to+1
+4. от 1.2 до 2, с точностью 0.001 ответ 1,09; пример 4: http://mathprofi.ru/formula_simpsona_metod_trapecij.html

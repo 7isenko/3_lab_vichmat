@@ -12,16 +12,14 @@ public class Main {
     private static final InputReader inputReader = new InputReader();
 
     public static void main(String[] args) {
-
         System.out.println("Выберите уравнение, интеграл от которого хотите найти");
         System.out.println("1 - y = -x^2 + 8x - 12");
         System.out.println("2 - y = 1/x");
         System.out.println("3 - y = sin(x) / x");
-        System.out.println("4 - y = 1/ln(x)");
-        System.out.println("5 - y = sqrt(1 + 2x^2 - x^3)");
+        System.out.println("4 - y = sqrt(1 + 2x^2 - x^3)");
         int chosenAlgorithm = inputReader.readIntFromConsole();
 
-        if (chosenAlgorithm > 5 || chosenAlgorithm <= 0) {
+        if (chosenAlgorithm > 4 || chosenAlgorithm <= 0) {
             System.out.println("Таких я не знаю!");
             return;
         }
@@ -43,10 +41,6 @@ public class Main {
                 strFunc = "y = sin(x) / x";
                 break;
             case 4:
-                chosenFunction = x -> 1 / log(x);
-                strFunc = "y = 1/ln(x)";
-                break;
-            case 5:
                 chosenFunction = x -> sqrt(1 + 2 * pow(x, 2) - pow(x, 3));
                 strFunc = "y = sqrt(1 + 2x^2 - x^3)";
                 break;
@@ -54,7 +48,7 @@ public class Main {
                 return;
         }
 
-        double xLeft = -10, xRight = 10;
+        double xLeft = -8, xRight = 8;
 
         GraphBuilder.createExampleGraph(chosenFunction, strFunc, xLeft, xRight);
         System.out.println("Посмотрите на выбранный график и выберите границы интегрирования");
@@ -67,6 +61,7 @@ public class Main {
             xRight = inputReader.readDoubleFromConsole();
 
             GraphBuilder.createIntegralExampleGraph(chosenFunction, strFunc, xLeft, xRight);
+
             System.out.println("Вы хотите изменить выбранные границы? y/n");
         } while (inputReader.parseYesOrNo());
 
@@ -78,8 +73,9 @@ public class Main {
         double answer = integralSolver.solve(xLeft, xRight);
         int splits = integralSolver.getSplits();
 
-        if (splits == 1024)
-            System.out.println("Было проведено слишком много итераций. Попробуйте задать равные по модулю границы.");
+        if (splits == 1024) {
+            System.out.println("Было проведено слишком много итераций. Попробуйте задать границы, равноудалённые от возможной точки разрыва.");
+        }
         System.out.printf("Ваш ответ: S = %.4f; количество разбиений: %d\n", answer, splits);
         System.out.printf("Полученная погрешность: %.8f", integralSolver.getLastInaccuracy());
 
