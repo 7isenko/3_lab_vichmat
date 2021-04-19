@@ -50,9 +50,25 @@ public class Main {
 
         double xLeft = -8, xRight = 8;
 
+        System.out.println("Вы хотите узнать значение функции в определённой точке? y/n");
+        if (inputReader.parseYesOrNo()) {
+            System.out.println("Введите x: ");
+            double x = inputReader.readDoubleFromConsole();
+            double y = chosenFunction.solve(x);
+            if (Double.isNaN(y)) {
+                y = chosenFunction.solve(x + 0.000001);
+                if (!Double.isNaN(y)) {
+                    System.out.println("y ~= " + Math.round(y));
+                } else {
+                    System.out.println("Вероятно, в этой точке функция не определена");
+                }
+            } else {
+                System.out.println("y = " + y);
+            }
+        }
+
         GraphBuilder.createExampleGraph(chosenFunction, strFunc, xLeft, xRight);
         System.out.println("Посмотрите на выбранный график и выберите границы интегрирования");
-
 
         do {
             System.out.println("Левая граница: ");

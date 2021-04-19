@@ -54,7 +54,7 @@ public class SimpsonIntegralSolver {
             newResult *= step / 3;
             lastInaccuracy = getRunge(newResult, result);
             result = newResult;
-        } while (Math.abs(lastInaccuracy) >= accuracy && splits < 1024);
+        } while (lastInaccuracy >= accuracy && splits < 1024);
 
 
         return swap ? -result : result;
@@ -78,7 +78,7 @@ public class SimpsonIntegralSolver {
     }
 
     private double getRunge(double result, double prevResult) {
-        return (prevResult - result) / 15;
+        return Math.abs((prevResult - result) / 15);
     }
 
     public double getLastInaccuracy() {
